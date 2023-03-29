@@ -11,7 +11,7 @@ config={
     "mode":"train",
     "batch":128,
     "device":0,
-    "epoch":100,
+    "epoch":1,
     "lr":1e-4,
     "cuda":0
 }
@@ -67,14 +67,35 @@ def train(net):
             epoch_loss+=loss.item()
         writer.add_scalar("loss",epoch_loss/len(trainloader),epoch)
         writer.add_scalar("acc",correct/len(trainloader),epoch)
-        print(f"[epoch:{epoch}]"," loss",epoch_loss/len(trainloader),"acc",correct/total)
+        print(f"[epoch:{epoch}]","loss",epoch_loss/len(trainloader),"acc",correct/total)
         if epoch%5==0:
             val_loss,val_acc=valid(net,valset,epoch)
             writer.add_scalar("Val loss",val_loss,epoch)
             writer.add_scalar("Val acc",val_acc,epoch)
 
-
+def test(net):
+    with torch.no_grad():
+         
+        net.to(device)
+        dataset = ImageDataset(base_dir + 'test',device=device)
+        testloader = DataLoader(dataset, batch_size=config["batch"], shuffle=True, num_workers=2)
+        
+        correct=0
+        total=0
+        for i,data in enumerate(testloader):
+            img,gt=data
+            img=img.to(device)
+            gt=gt.to(device)
+            y=net(img)
+           
+            cls=torch.argmax(y,dim=1)
+            correct+=(gt==cls).sum().item()
+            total+=gt.size(0)
+            
+        print("Test acc",correct/total)
+        
 if __name__=="__main__":
     net = LeNet(2)
     train(net)
+    test(net)
     writer.close()
