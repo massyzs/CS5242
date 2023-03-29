@@ -1,0 +1,62 @@
+import os
+from PIL import Image, ImageStat
+import numpy as np
+from glob import glob
+from tqdm import tqdm
+import shutil
+# Parameters/home/xiao/code/CS5242/weapon/train/norm/A0196632X_20220823_normal_0832_160.png
+# mode="train"
+mode="test"
+# cls="weap"
+cls="norm"
+base_dir = f'/home/xiao/code/CS5242/weapon/{mode}/{cls}/'
+dest_dir=f"/home/xiao/code/CS5242/nets/dataset/{mode}/{cls}/"
+bad_dest_dir=f"/home/xiao/code/CS5242/nets/dataset/bad_{mode}/{cls}/"
+
+train_norm_file=glob(base_dir+"*.png")
+# train_weap_file=glob(base_dir+"train/weap/*.png")
+std_dev_threshold = 1.0  # Adjust this value based on your dataset
+dominant_color_ratio = 0.8  # Adjust this value based on your dataset
+
+def is_low_quality(image_path, std_dev_threshold, dominant_color_ratio):
+   
+    # Open the image using PIL
+    img = Image.open(image_path)
+    # Check the standard deviation of pixel intensities
+    stat = ImageStat.Stat(img)
+    std_dev = np.std(stat.mean)
+    
+    # Check for dominant color
+    color_count = img.getcolors(maxcolors=img.width * img.height)
+    color_count_sorted = sorted(color_count, reverse=True)
+    dominant_color_count = color_count_sorted[0][0]
+    # breakpoint()
+    if dominant_color_count / (img.width * img.height) > dominant_color_ratio:
+        return True
+    if std_dev < std_dev_threshold:
+        return True
+   
+    return False
+    
+        # print(f"Removed low-quality image: {image_path}")
+if __name__=="__main__":
+    # tmp_path="/home/xiao/code/CS5242/weapon/train/weap/A0218237E_20220904_threat_9088_100.png"
+    # is_low_quality(tmp_path, std_dev_threshold, dominant_color_ratio)
+    count=0
+    if not os.path.exists(dest_dir):
+        os.makedirs(dest_dir)
+    if not os.path.exists(bad_dest_dir):
+        os.makedirs(bad_dest_dir)
+
+    for img_pth in tqdm(train_norm_file):
+        answer=is_low_quality(img_pth, std_dev_threshold, dominant_color_ratio)
+      
+        if not answer:
+            shutil.copy2(img_pth,dest_dir)
+        else:
+            shutil.copy2(img_pth,bad_dest_dir)
+            count+=1
+            print(img_pth,"is not good")
+    print(f"bad images:{count}")
+         
+            
