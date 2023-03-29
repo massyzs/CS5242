@@ -26,6 +26,7 @@ def valid(net,data,epoch):
         loader = DataLoader(data, batch_size=config["batch"], shuffle=True, num_workers=2)
         epoch_loss=0
         correct=0
+        total=0
         for i,data in enumerate(loader):
             img,gt=data
             img=img.to(device)
@@ -34,8 +35,9 @@ def valid(net,data,epoch):
             loss=criertion(y,gt)
             cls=torch.argmax(y,dim=1)
             correct+=(gt==cls).sum().item()
+            total+=gt.size(0)
             epoch_loss+=loss.item()
-        print(f"[epoch:{epoch}]","Val loss",epoch_loss/len(loader),"Val acc",correct/len(loader))
+        print(f"[epoch:{epoch}]","Val loss",epoch_loss/len(loader),"Val acc",correct/total)
         return epoch_loss/len(loader),correct/len(loader)
 def train(net):
     net.to(device)
@@ -47,6 +49,7 @@ def train(net):
     for epoch in range(config["epoch"]):
         epoch_loss=0
         correct=0
+        total=0
         for i,data in enumerate(trainloader):
             img,gt=data
             img=img.to(device)
@@ -58,12 +61,13 @@ def train(net):
             cls=torch.argmax(y,dim=1)
             loss=criertion(y,gt)
             correct+=(gt==cls).sum().item()
+            total+=gt.size(0)
             loss.backward()
             opt.step()
             epoch_loss+=loss.item()
         writer.add_scalar("loss",epoch_loss/len(trainloader),epoch)
         writer.add_scalar("acc",correct/len(trainloader),epoch)
-        print(f"[epoch:{epoch}]"," loss",epoch_loss/len(trainloader),"acc",correct/len(trainloader))
+        print(f"[epoch:{epoch}]"," loss",epoch_loss/len(trainloader),"acc",correct/total)
         if epoch%5==0:
             val_loss,val_acc=valid(net,valset,epoch)
             writer.add_scalar("Val loss",val_loss,epoch)
