@@ -8,6 +8,8 @@ import torch.nn as nn
 from tqdm import tqdm
 from torch.utils.tensorboard import SummaryWriter
 import argparse
+from accelerate import Accelerator
+accelerator = Accelerator()
 parser = argparse.ArgumentParser(description='Xiao is handsome')
 parser.add_argument('--cuda', type=int, default=0)
 parser.add_argument('--batch', type=int, default=64)
