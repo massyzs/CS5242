@@ -13,7 +13,8 @@ accelerator = Accelerator()
 parser = argparse.ArgumentParser(description='Xiao is handsome')
 parser.add_argument('--cuda', type=int, default=0)
 parser.add_argument('--batch', type=int, default=128)
-parser.add_argument('--norm', type=int, default=0)
+parser.add_argument('--norm', type=int, default=1)
+parser.add_argument('--norm_type', type=str, default="LN",help="BN for batchnorm, LN for LayerNorm")
 args = parser.parse_args()
 config={
     "mode":"train",
@@ -21,7 +22,8 @@ config={
     "epoch":40,
     "lr":1e-4,
     "cuda":args.cuda,
-    "norm":args.norm
+    "norm":args.norm,
+    "norm_type":args.norm_type
 }
 writer= SummaryWriter(log_dir="./nets/tfboard/run1")
 base_dir="/home/xiao/code/CS5242/dataset/"

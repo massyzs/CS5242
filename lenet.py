@@ -10,14 +10,23 @@ class LeNet(nn.Module):
         self.fc1   = nn.Linear(16*29*29, 120)
         self.fc2   = nn.Linear(120, 84)
         self.fc3   = nn.Linear(84, num_classes)
-        self.norm1=nn.BatchNorm2d(6)
-        self.norm2=nn.BatchNorm2d(16)
-        self.norm3=nn.BatchNorm1d(16*29*29)
-        self.norm4=nn.BatchNorm1d(120)
-        self.norm5=nn.BatchNorm1d(84)
         self.config=config
+        if self.config["norm_type"]=="BN":
+            self.norm1=nn.BatchNorm2d(6)
+            self.norm2=nn.BatchNorm2d(16)
+            self.norm3=nn.BatchNorm1d(16*29*29)
+            self.norm4=nn.BatchNorm1d(120)
+            self.norm5=nn.BatchNorm1d(84)
+        elif self.config["norm_type"]=="LN":
+            self.norm1=nn.LayerNorm([6,124,124])
+            self.norm2=nn.LayerNorm([16,58,58])
+            self.norm3=nn.LayerNorm(16*29*29)
+            self.norm4=nn.LayerNorm(120)
+            self.norm5=nn.LayerNorm(84)
+        
 
     def forward(self, x):
+        # breakpoint()
         out = self.conv1(x)
         if self.config["norm"]==1:
             out=self.norm1(out)
@@ -41,5 +50,4 @@ class LeNet(nn.Module):
         out = F.relu(out)
         out = self.fc3(out)
 
-        # return out, latent1, latent2, latent3
         return out
