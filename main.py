@@ -14,7 +14,7 @@ config={
     "lr":1e-4,
     "cuda":0
 }
- = SummaryWriter(log_dir="./nets/tfboard/run1")
+writer= SummaryWriter(log_dir="./nets/tfboard/run1")
 base_dir="./dataset/"
 device=config["cuda"]
 device=torch.device(f"cuda:{device}")
@@ -42,7 +42,7 @@ def train(net):
     net.to(device)
     criertion=nn.CrossEntropyLoss()
     opt=optim.Adam(net.parameters(),lr=config["lr"],betas=(0.9, 0.999))
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, 'min')
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, 'min',patience=5)
     dataset = ImageDataset(base_dir + config["mode"],device=device)
     trainset, valset = random_split(dataset, [int(0.9 * len(dataset)), len(dataset)-int(0.9 * len(dataset))])
     trainloader = DataLoader(trainset, batch_size=config["batch"], shuffle=True, num_workers=2)
@@ -65,6 +65,7 @@ def train(net):
             loss.backward()
             opt.step()
             epoch_loss+=loss.item()
+        scheduler.step()
         writer.add_scalar("loss",epoch_loss/len(trainloader),epoch)
         writer.add_scalar("acc",correct/len(trainloader),epoch)
         print(f"[epoch:{epoch}]","loss",epoch_loss/len(trainloader),"acc",correct/total)
