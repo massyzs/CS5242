@@ -12,14 +12,16 @@ from accelerate import Accelerator
 accelerator = Accelerator()
 parser = argparse.ArgumentParser(description='Xiao is handsome')
 parser.add_argument('--cuda', type=int, default=0)
-parser.add_argument('--batch', type=int, default=64)
+parser.add_argument('--batch', type=int, default=128)
+parser.add_argument('--norm', type=int, default=0)
 args = parser.parse_args()
 config={
     "mode":"train",
     "batch":args.batch,
-    "epoch":50,
+    "epoch":40,
     "lr":1e-4,
-    "cuda":args.cuda
+    "cuda":args.cuda,
+    "norm":args.norm
 }
 writer= SummaryWriter(log_dir="./nets/tfboard/run1")
 base_dir="/home/xiao/code/CS5242/dataset/"
@@ -103,7 +105,7 @@ def test(net):
         print("Test acc",correct/total)
         
 if __name__=="__main__":
-    net = LeNet(2)
+    net = LeNet(2,config)
     train(net)
     test(net)
     writer.close()

@@ -1,5 +1,5 @@
 # Please type following commond. CUDA_VISIBLE_DEVICES="The devices you want use"
-# CUDA_VISIBLE_DEVICES=0,1,6,7 accelerate launch main_cx.py
+# CUDA_VISIBLE_DEVICES=0,1 accelerate launch main_cx.py
 from dataset import ImageDataset
 from torch.utils.data import DataLoader,random_split
 from resnet import ResNet
@@ -56,9 +56,11 @@ def train(net):
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, 'min',patience=5,verbose=True)
     dataset = ImageDataset(base_dir + config["mode"],device=device)
     trainset, valset = random_split(dataset, [int(0.9 * len(dataset)), len(dataset)-int(0.9 * len(dataset))])
+    
     trainloader = DataLoader(trainset, batch_size=config["batch"], shuffle=True, num_workers=2)
     net, opt, trainloader, scheduler = accelerator.prepare(net, opt, trainloader, scheduler)
     for epoch in range(config["epoch"]):
+        print(accelerator.is_local_main_process)
         epoch_loss=0
         correct=0
         total=0
