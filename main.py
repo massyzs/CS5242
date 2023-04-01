@@ -10,13 +10,12 @@ from torch.utils.tensorboard import SummaryWriter
 config={
     "mode":"train",
     "batch":128,
-    "device":0,
-    "epoch":1,
+    "epoch":100,
     "lr":1e-4,
     "cuda":0
 }
-writer = SummaryWriter(log_dir="/home/xiao/code/CS5242/nets/tfboard/run1")
-base_dir="/home/xiao/code/CS5242/dataset/"
+ = SummaryWriter(log_dir="./nets/tfboard/run1")
+base_dir="./dataset/"
 device=config["cuda"]
 device=torch.device(f"cuda:{device}")
 def valid(net,data,epoch):
@@ -43,6 +42,7 @@ def train(net):
     net.to(device)
     criertion=nn.CrossEntropyLoss()
     opt=optim.Adam(net.parameters(),lr=config["lr"],betas=(0.9, 0.999))
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, 'min')
     dataset = ImageDataset(base_dir + config["mode"],device=device)
     trainset, valset = random_split(dataset, [int(0.9 * len(dataset)), len(dataset)-int(0.9 * len(dataset))])
     trainloader = DataLoader(trainset, batch_size=config["batch"], shuffle=True, num_workers=2)
