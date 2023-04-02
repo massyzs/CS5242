@@ -1,0 +1,67 @@
+nohup: ignoring input
+╭───────────────────── Traceback (most recent call last) ──────────────────────╮
+│ /home/yao/Mislabel_learning/CS5242/main.py:137 in <module>                   │
+│                                                                              │
+│   134 │   dataset = ImageDataset(base_dir + 'test',device=device)            │
+│   135 │   testloader = DataLoader(dataset, batch_size=config["batch"], shuff │
+│   136 │                                                                      │
+│ ❱ 137 │   train(net,trainloader,val_loader)                                  │
+│   138 │   test(net,testloader)                                               │
+│   139 │   writer.close()                                                     │
+│   140                                                                        │
+│                                                                              │
+│ /home/yao/Mislabel_learning/CS5242/main.py:88 in train                       │
+│                                                                              │
+│    85 │   │   │   gt=gt.to(device)                                           │
+│    86 │   │   │   opt.zero_grad()                                            │
+│    87 │   │   │   # breakpoint()                                             │
+│ ❱  88 │   │   │   y=net(img)                                                 │
+│    89 │   │   │                                                              │
+│    90 │   │   │   cls=torch.argmax(y,dim=1)                                  │
+│    91 │   │   │   loss=criertion(y,gt)                                       │
+│                                                                              │
+│ /home/yao/.conda/envs/pytorch/lib/python3.8/site-packages/torch/nn/modules/m │
+│ odule.py:1130 in _call_impl                                                  │
+│                                                                              │
+│   1127 │   │   # this function, and just call forward.                       │
+│   1128 │   │   if not (self._backward_hooks or self._forward_hooks or self._ │
+│   1129 │   │   │   │   or _global_forward_hooks or _global_forward_pre_hooks │
+│ ❱ 1130 │   │   │   return forward_call(*input, **kwargs)                     │
+│   1131 │   │   # Do not call functions when jit is used                      │
+│   1132 │   │   full_backward_hooks, non_full_backward_hooks = [], []         │
+│   1133 │   │   if self._backward_hooks or _global_backward_hooks:            │
+│                                                                              │
+│ /home/yao/Mislabel_learning/CS5242/lenet.py:164 in forward                   │
+│                                                                              │
+│   161 │   │   if self.config["norm"]==3:                                     │
+│   162 │   │   │   out=self.norm3(out)                                        │
+│   163 │   │                                                                  │
+│ ❱ 164 │   │   out=self.fc1(out)                                              │
+│   165 │   │   out = self.activation(out)                                     │
+│   166 │   │   if self.config["norm"]==4:                                     │
+│   167 │   │   │   out=self.norm4(out)                                        │
+│                                                                              │
+│ /home/yao/.conda/envs/pytorch/lib/python3.8/site-packages/torch/nn/modules/m │
+│ odule.py:1130 in _call_impl                                                  │
+│                                                                              │
+│   1127 │   │   # this function, and just call forward.                       │
+│   1128 │   │   if not (self._backward_hooks or self._forward_hooks or self._ │
+│   1129 │   │   │   │   or _global_forward_hooks or _global_forward_pre_hooks │
+│ ❱ 1130 │   │   │   return forward_call(*input, **kwargs)                     │
+│   1131 │   │   # Do not call functions when jit is used                      │
+│   1132 │   │   full_backward_hooks, non_full_backward_hooks = [], []         │
+│   1133 │   │   if self._backward_hooks or _global_backward_hooks:            │
+│                                                                              │
+│ /home/yao/.conda/envs/pytorch/lib/python3.8/site-packages/torch/nn/modules/l │
+│ inear.py:114 in forward                                                      │
+│                                                                              │
+│   111 │   │   │   init.uniform_(self.bias, -bound, bound)                    │
+│   112 │                                                                      │
+│   113 │   def forward(self, input: Tensor) -> Tensor:                        │
+│ ❱ 114 │   │   return F.linear(input, self.weight, self.bias)                 │
+│   115 │                                                                      │
+│   116 │   def extra_repr(self) -> str:                                       │
+│   117 │   │   return 'in_features={}, out_features={}, bias={}'.format(      │
+╰──────────────────────────────────────────────────────────────────────────────╯
+RuntimeError: mat1 and mat2 shapes cannot be multiplied (128x8192 and 
+131072x1024)

@@ -1,0 +1,121 @@
+nohup: ignoring input
+╭───────────────────── Traceback (most recent call last) ──────────────────────╮
+│ /home/yao/Mislabel_learning/CS5242/main.py:137 in <module>                   │
+│                                                                              │
+│   134 │   dataset = ImageDataset(base_dir + 'test',device=device)            │
+│   135 │   testloader = DataLoader(dataset, batch_size=config["batch"], shuff │
+│   136 │                                                                      │
+│ ❱ 137 │   train(net,trainloader,val_loader)                                  │
+│   138 │   test(net,testloader)                                               │
+│   139 │   writer.close()                                                     │
+│   140                                                                        │
+│                                                                              │
+│ /home/yao/Mislabel_learning/CS5242/main.py:82 in train                       │
+│                                                                              │
+│    79 │   │   epoch_loss=0                                                   │
+│    80 │   │   correct=0                                                      │
+│    81 │   │   total=0                                                        │
+│ ❱  82 │   │   for i,data in enumerate(trainloader):                          │
+│    83 │   │   │   img,gt=data                                                │
+│    84 │   │   │   img=img.to(device)                                         │
+│    85 │   │   │   gt=gt.to(device)                                           │
+│                                                                              │
+│ /home/yao/.conda/envs/pytorch/lib/python3.8/site-packages/torch/utils/data/d │
+│ ataloader.py:681 in __next__                                                 │
+│                                                                              │
+│    678 │   │   │   if self._sampler_iter is None:                            │
+│    679 │   │   │   │   # TODO(https://github.com/pytorch/pytorch/issues/7675 │
+│    680 │   │   │   │   self._reset()  # type: ignore[call-arg]               │
+│ ❱  681 │   │   │   data = self._next_data()                                  │
+│    682 │   │   │   self._num_yielded += 1                                    │
+│    683 │   │   │   if self._dataset_kind == _DatasetKind.Iterable and \      │
+│    684 │   │   │   │   │   self._IterableDataset_len_called is not None and  │
+│                                                                              │
+│ /home/yao/.conda/envs/pytorch/lib/python3.8/site-packages/torch/utils/data/d │
+│ ataloader.py:1359 in _next_data                                              │
+│                                                                              │
+│   1356 │   │   │   │   return self._process_data(data)                       │
+│   1357 │   │   │                                                             │
+│   1358 │   │   │   assert not self._shutdown and self._tasks_outstanding > 0 │
+│ ❱ 1359 │   │   │   idx, data = self._get_data()                              │
+│   1360 │   │   │   self._tasks_outstanding -= 1                              │
+│   1361 │   │   │   if self._dataset_kind == _DatasetKind.Iterable:           │
+│   1362 │   │   │   │   # Check for _IterableDatasetStopIteration             │
+│                                                                              │
+│ /home/yao/.conda/envs/pytorch/lib/python3.8/site-packages/torch/utils/data/d │
+│ ataloader.py:1325 in _get_data                                               │
+│                                                                              │
+│   1322 │   │   │   # need to call `.task_done()` because we don't use `.join │
+│   1323 │   │   else:                                                         │
+│   1324 │   │   │   while True:                                               │
+│ ❱ 1325 │   │   │   │   success, data = self._try_get_data()                  │
+│   1326 │   │   │   │   if success:                                           │
+│   1327 │   │   │   │   │   return data                                       │
+│   1328                                                                       │
+│                                                                              │
+│ /home/yao/.conda/envs/pytorch/lib/python3.8/site-packages/torch/utils/data/d │
+│ ataloader.py:1163 in _try_get_data                                           │
+│                                                                              │
+│   1160 │   │   # Returns a 2-tuple:                                          │
+│   1161 │   │   #   (bool: whether successfully get data, any: data if succes │
+│   1162 │   │   try:                                                          │
+│ ❱ 1163 │   │   │   data = self._data_queue.get(timeout=timeout)              │
+│   1164 │   │   │   return (True, data)                                       │
+│   1165 │   │   except Exception as e:                                        │
+│   1166 │   │   │   # At timeout and error, we manually check whether any wor │
+│                                                                              │
+│ /home/yao/.conda/envs/pytorch/lib/python3.8/multiprocessing/queues.py:107 in │
+│ get                                                                          │
+│                                                                              │
+│   104 │   │   │   try:                                                       │
+│   105 │   │   │   │   if block:                                              │
+│   106 │   │   │   │   │   timeout = deadline - time.monotonic()              │
+│ ❱ 107 │   │   │   │   │   if not self._poll(timeout):                        │
+│   108 │   │   │   │   │   │   raise Empty                                    │
+│   109 │   │   │   │   elif not self._poll():                                 │
+│   110 │   │   │   │   │   raise Empty                                        │
+│                                                                              │
+│ /home/yao/.conda/envs/pytorch/lib/python3.8/multiprocessing/connection.py:25 │
+│ 7 in poll                                                                    │
+│                                                                              │
+│   254 │   │   """Whether there is any input available to be read"""          │
+│   255 │   │   self._check_closed()                                           │
+│   256 │   │   self._check_readable()                                         │
+│ ❱ 257 │   │   return self._poll(timeout)                                     │
+│   258 │                                                                      │
+│   259 │   def __enter__(self):                                               │
+│   260 │   │   return self                                                    │
+│                                                                              │
+│ /home/yao/.conda/envs/pytorch/lib/python3.8/multiprocessing/connection.py:42 │
+│ 4 in _poll                                                                   │
+│                                                                              │
+│   421 │   │   return self._recv(size)                                        │
+│   422 │                                                                      │
+│   423 │   def _poll(self, timeout):                                          │
+│ ❱ 424 │   │   r = wait([self], timeout)                                      │
+│   425 │   │   return bool(r)                                                 │
+│   426                                                                        │
+│   427                                                                        │
+│                                                                              │
+│ /home/yao/.conda/envs/pytorch/lib/python3.8/multiprocessing/connection.py:93 │
+│ 1 in wait                                                                    │
+│                                                                              │
+│   928 │   │   │   │   deadline = time.monotonic() + timeout                  │
+│   929 │   │   │                                                              │
+│   930 │   │   │   while True:                                                │
+│ ❱ 931 │   │   │   │   ready = selector.select(timeout)                       │
+│   932 │   │   │   │   if ready:                                              │
+│   933 │   │   │   │   │   return [key.fileobj for (key, events) in ready]    │
+│   934 │   │   │   │   else:                                                  │
+│                                                                              │
+│ /home/yao/.conda/envs/pytorch/lib/python3.8/selectors.py:415 in select       │
+│                                                                              │
+│   412 │   │   │   timeout = math.ceil(timeout * 1e3)                         │
+│   413 │   │   ready = []                                                     │
+│   414 │   │   try:                                                           │
+│ ❱ 415 │   │   │   fd_event_list = self._selector.poll(timeout)               │
+│   416 │   │   except InterruptedError:                                       │
+│   417 │   │   │   return ready                                               │
+│   418 │   │   for fd, event in fd_event_list:                                │
+╰──────────────────────────────────────────────────────────────────────────────╯
+KeyboardInterrupt
