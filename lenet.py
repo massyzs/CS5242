@@ -81,7 +81,7 @@ class LeNet(nn.Module):
         self.conv4 = nn.Conv2d(128, 256, 3, padding=1)
         self.conv5 = nn.Conv2d(256, 512, 3, padding=1)
 
-        self.fc1 = nn.Linear(512 * 16 * 16, 1024)
+        self.fc1 = nn.Linear(128*8*8, 1024)
         self.fc2 = nn.Linear(1024, 512)
         self.fc3 = nn.Linear(512, num_classes)
 
@@ -174,7 +174,7 @@ class LeNet(nn.Module):
         out = self.activation(out)
         if self.config["dropout"]:
             out = self.dropout(out) # Applying dropout after ReLU
-            
+
         out = self.fc3(out)
 
         return out
