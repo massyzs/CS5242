@@ -15,16 +15,22 @@ parser.add_argument('--cuda', type=int, default=0)
 parser.add_argument('--batch', type=int, default=128)
 parser.add_argument('--norm', type=int, default=1)
 parser.add_argument('--epoch', type=int, default=40)
+parser.add_argument('--dropout', type=int, default=0, help="bool: whether or not to use drop out")
+parser.add_argument('--weight_decay', type=int, default=0, help="bool: whether or not to use weight decay (L2 regularization)")
 parser.add_argument('--norm_type', type=str, default="LN",help="BN for batchnorm, LN for LayerNorm")
+parser.add_argument('--opt', type=str, default="Adam", help="optimizer type: Adam or SGD")
 args = parser.parse_args()
 config={
-    "mode":"train",
-    "batch":args.batch,
-    "epoch":args.epoch,
-    "lr":1e-4,
-    "cuda":args.cuda,
-    "norm":args.norm,
-    "norm_type":args.norm_type
+    "mode": "train",
+    "batch": args.batch,
+    "epoch": args.epoch,
+    "lr": 1e-4,
+    "cuda": args.cuda,
+    "norm": args.norm,
+    "norm_type": args.norm_type,
+    "dropout": bool(args.dropout),
+    "weight_decay": bool(args.weight_decay),
+    "opt": args.opt,
 }
 writer= SummaryWriter(log_dir="./nets/tfboard/run1")
 base_dir="./dataset/"
@@ -55,7 +61,16 @@ def train(net, trainloader, valloader):
     net.train()
     net.to(device)
     criertion=nn.CrossEntropyLoss()
-    opt=optim.Adam(net.parameters(),lr=config["lr"],betas=(0.9, 0.999))
+    if config["opt"] == "Adam":
+        if config["weight_decay"]:
+            opt=optim.SGD(net.parameters(), lr=config["lr"], weight_decay=0.0005)
+        else:
+            opt=optim.SGD(net.parameters(), lr=config["lr"])
+    else:
+        if config["weight_decay"]:
+            opt=optim.Adam(net.parameters(),lr=config["lr"],betas=(0.9, 0.999), weight_decay=0.0005)
+        else:
+            opt=optim.Adam(net.parameters(),lr=config["lr"],betas=(0.9, 0.999))
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, 'min',patience=5,verbose=True)
     
     for epoch in range(config["epoch"]):

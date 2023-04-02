@@ -32,11 +32,15 @@ class LeNet(nn.Module):
             out=self.norm1(out)
         out = F.relu(out)
         out = F.max_pool2d(out, 2)
+        if self.config["dropout"]:
+            out = self.dropout(out) # Applying dropout after max pooling
         out = self.conv2(out)
         if self.config["norm"]==2:
             out=self.norm2(out)
         out = F.relu(out)
         out = F.max_pool2d(out, 2)
+        if self.config["dropout"]:
+            out = self.dropout(out) # Applying dropout after max pooling
         out = out.view(out.size(0), -1)
         if self.config["norm"]==3:
             out=self.norm3(out)
@@ -44,10 +48,14 @@ class LeNet(nn.Module):
         out = F.relu(out)
         if self.config["norm"]==4:
             out=self.norm4(out)
+        if self.config["dropout"]:
+            out = self.dropout(out) # Applying dropout after ReLU
         out=self.fc2(out)
         if self.config["norm"]==5:
             out=self.norm5(out)
         out = F.relu(out)
+        if self.config["dropout"]:
+            out = self.dropout(out) # Applying dropout after ReLU
         out = self.fc3(out)
 
         return out
