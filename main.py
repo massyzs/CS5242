@@ -18,7 +18,7 @@ parser.add_argument('--epoch', type=int, default=40)
 parser.add_argument('--dropout', type=int, default=0, help="bool: whether or not to use drop out")
 parser.add_argument('--weight_decay', type=int, default=0, help="bool: whether or not to use weight decay (L2 regularization)")
 parser.add_argument('--norm_type', type=str, default="LN",help="BN for batchnorm, LN for LayerNorm")
-parser.add_argument('--opt', type=str, default="Adam", help="optimizer type: Adam or SGD")
+parser.add_argument('--opt', type=str, default="adam", help="optimizer type: adam or sgd")
 parser.add_argument('--activation', type=str, default="relu", help="leakyrelu, relu, sigmoid, tanh")
 args = parser.parse_args()
 config={
@@ -63,7 +63,7 @@ def train(net, trainloader, valloader):
     net.train()
     net.to(device)
     criertion=nn.CrossEntropyLoss()
-    if config["opt"] == "Adam":
+    if config["opt"] == "sgd":
         if config["weight_decay"]:
             opt=optim.SGD(net.parameters(), lr=config["lr"], weight_decay=0.0005)
         else:
