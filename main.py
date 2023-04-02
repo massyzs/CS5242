@@ -19,6 +19,7 @@ parser.add_argument('--dropout', type=int, default=0, help="bool: whether or not
 parser.add_argument('--weight_decay', type=int, default=0, help="bool: whether or not to use weight decay (L2 regularization)")
 parser.add_argument('--norm_type', type=str, default="LN",help="BN for batchnorm, LN for LayerNorm")
 parser.add_argument('--opt', type=str, default="Adam", help="optimizer type: Adam or SGD")
+parser.add_argument('--activation', type=str, default="relu", help="leakyrelu, relu, sigmoid, tanh")
 args = parser.parse_args()
 config={
     "mode": "train",
@@ -31,6 +32,7 @@ config={
     "dropout": bool(args.dropout),
     "weight_decay": bool(args.weight_decay),
     "opt": args.opt,
+    "activation": args.activation,
 }
 writer= SummaryWriter(log_dir="./nets/tfboard/run1")
 base_dir="./dataset/"

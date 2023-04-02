@@ -10,7 +10,9 @@ class LeNet(nn.Module):
         self.fc1   = nn.Linear(16*29*29, 120)
         self.fc2   = nn.Linear(120, 84)
         self.fc3   = nn.Linear(84, num_classes)
+
         self.config=config
+
         if self.config["norm_type"]=="BN":
             self.norm1=nn.BatchNorm2d(6)
             self.norm2=nn.BatchNorm2d(16)
@@ -24,20 +26,29 @@ class LeNet(nn.Module):
             self.norm4=nn.LayerNorm(120)
             self.norm5=nn.LayerNorm(84)
         
+        if self.config["activation"] == "relu":
+            self.activation = nn.ReLU(inplace=True)
+        elif self.config["activation"] == "leaky_relu":
+            self.activation = nn.LeakyReLU(inplace=True)
+        elif self.config["activation"] == "sigmoid":
+            self.activation = nn.Sigmoid()
+        elif self.config["activation"] == "tanh":
+            self.activation = nn.Tanh()
+        
 
     def forward(self, x):
         # breakpoint()
         out = self.conv1(x)
         if self.config["norm"]==1:
             out=self.norm1(out)
-        out = F.relu(out)
+        out = self.activation(out)
         out = F.max_pool2d(out, 2)
         if self.config["dropout"]:
             out = self.dropout(out) # Applying dropout after max pooling
         out = self.conv2(out)
         if self.config["norm"]==2:
             out=self.norm2(out)
-        out = F.relu(out)
+        out = self.activation(out)
         out = F.max_pool2d(out, 2)
         if self.config["dropout"]:
             out = self.dropout(out) # Applying dropout after max pooling
@@ -45,7 +56,7 @@ class LeNet(nn.Module):
         if self.config["norm"]==3:
             out=self.norm3(out)
         out=self.fc1(out)
-        out = F.relu(out)
+        out = self.activation(out)
         if self.config["norm"]==4:
             out=self.norm4(out)
         if self.config["dropout"]:
@@ -53,7 +64,7 @@ class LeNet(nn.Module):
         out=self.fc2(out)
         if self.config["norm"]==5:
             out=self.norm5(out)
-        out = F.relu(out)
+        out = self.activation(out)
         if self.config["dropout"]:
             out = self.dropout(out) # Applying dropout after ReLU
         out = self.fc3(out)
