@@ -35,6 +35,7 @@ class LeNet(nn.Module):
         elif self.config["activation"] == "tanh":
             self.activation = nn.Tanh()
         
+        self.dropout = nn.Dropout(p=0.5)
 
     def forward(self, x):
         # breakpoint()
