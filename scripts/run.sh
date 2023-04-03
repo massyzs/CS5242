@@ -12,3 +12,5 @@ do
         done
     done
 done
+
+# nohup python -u main.py --cuda 0 --norm_type BN --epoch 40 --dropout 0 --weight_decay 0 --opt adam --activation relu --aug 1 &> BN-adam-relu-Aug-Nodropout-NoL2.log

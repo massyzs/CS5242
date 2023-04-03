@@ -24,6 +24,7 @@ parser.add_argument('--weight_decay', type=int, default=0, help="bool: whether o
 parser.add_argument('--norm_type', type=str, default="LN",help="BN for batchnorm, LN for LayerNorm")
 parser.add_argument('--opt', type=str, default="adam", help="optimizer type: adam or sgd")
 parser.add_argument('--activation', type=str, default="relu", help="leakyrelu, relu, sigmoid, tanh")
+parser.add_argument('--aug', type=int, default=1, help="bool: whether or not to use data augmentation")
 args = parser.parse_args()
 config={
     "mode": "train",
@@ -37,6 +38,7 @@ config={
     "weight_decay": bool(args.weight_decay),
     "opt": args.opt,
     "activation": args.activation,
+    "data_augmentation":bool(args.aug)
 }
 writer= SummaryWriter(log_dir="./nets/tfboard/run1")
 base_dir="./dataset/"
@@ -101,7 +103,7 @@ def train(net, trainloader, valloader):
         writer.add_scalar("acc",correct/len(trainloader),epoch)
         print(f"[epoch:{epoch}]","loss",epoch_loss/len(trainloader),"acc",correct/total)
         if epoch%5==0:
-            test_dataset = ImageDataset(base_dir + 'test',device=device)
+            test_dataset = ImageDataset(base_dir + 'test',device=device,config=config,train=False)
             testloader = DataLoader(test_dataset, batch_size=config["batch"], shuffle=True, num_workers=2)
             val_loss,val_acc=valid(net,testloader,epoch)
             # val_loss,val_acc=valid(net,valloader,epoch)
@@ -142,12 +144,12 @@ def test(net, testloader):
         
 if __name__=="__main__":
     net = LeNet(2,config)
-    dataset = ImageDataset(base_dir + config["mode"],device=device)
+    dataset = ImageDataset(base_dir + config["mode"],device=device,config=config,train=True)
     trainset, valset = random_split(dataset, [int(0.9 * len(dataset)), len(dataset)-int(0.9 * len(dataset))])
     trainloader = DataLoader(trainset, batch_size=config["batch"], shuffle=True, num_workers=2)
     val_loader = DataLoader(valset, batch_size=config["batch"], shuffle=True, num_workers=2)
 
-    dataset = ImageDataset(base_dir + 'test',device=device)
+    dataset = ImageDataset(base_dir + 'test',device=device,config=config,train=False)
     testloader = DataLoader(dataset, batch_size=config["batch"], shuffle=True, num_workers=2)
 
     train(net,trainloader,val_loader)
