@@ -1,5 +1,6 @@
 import torch.nn as nn
 import torch.nn.functional as F
+import torch
 
 
 # class LeNet(nn.Module):
@@ -73,6 +74,14 @@ import torch.nn.functional as F
 #         return out
 
 class LeNet(nn.Module):
+    '''
+    Input: (512, 512, 3)
+    Conv1: (512, 512, 32) -> MaxPool: (256, 256, 32)
+    Conv2: (256, 256, 64) -> MaxPool: (128, 128, 64)
+    Conv3: (128, 128, 128) -> MaxPool: (64, 64, 128)
+    Conv4: (64, 64, 256) -> MaxPool: (32, 32, 256)
+    Conv5: (32, 32, 512) -> MaxPool: (16, 16, 512)
+    '''
     def __init__(self, num_classes,config):
         super(LeNet, self).__init__()
         self.conv1 = nn.Conv2d(3, 32, 3, padding=1)
@@ -81,7 +90,7 @@ class LeNet(nn.Module):
         self.conv4 = nn.Conv2d(128, 256, 3, padding=1)
         self.conv5 = nn.Conv2d(256, 512, 3, padding=1)
 
-        self.fc1 = nn.Linear(128*8*8, 1024)
+        self.fc1 = nn.Linear(512*16*16, 1024)
         self.fc2 = nn.Linear(1024, 512)
         self.fc3 = nn.Linear(512, num_classes)
 
@@ -134,7 +143,7 @@ class LeNet(nn.Module):
             out = self.dropout(out) # Applying dropout after max pooling
         
         out = self.conv3(out)
-        if self.config["norm"]==2:
+        if self.config["norm"]==3:
             out=self.norm3(out)
         out = self.activation(out)
         out = F.max_pool2d(out, 2)
@@ -142,7 +151,7 @@ class LeNet(nn.Module):
             out = self.dropout(out) # Applying dropout after max pooling
 
         out = self.conv4(out)
-        if self.config["norm"]==2:
+        if self.config["norm"]==4:
             out=self.norm4(out)
         out = self.activation(out)
         out = F.max_pool2d(out, 2)
@@ -150,7 +159,7 @@ class LeNet(nn.Module):
             out = self.dropout(out) # Applying dropout after max pooling
         
         out = self.conv5(out)
-        if self.config["norm"]==2:
+        if self.config["norm"]==5:
             out=self.norm5(out)
         out = self.activation(out)
         out = F.max_pool2d(out, 2)
@@ -158,23 +167,21 @@ class LeNet(nn.Module):
             out = self.dropout(out) # Applying dropout after max pooling
 
         out = out.view(out.size(0), -1)
-        if self.config["norm"]==3:
-            out=self.norm3(out)
 
         out=self.fc1(out)
         out = self.activation(out)
-        if self.config["norm"]==4:
-            out=self.norm4(out)
+        if self.config["norm"]==6:
+            out=self.norm6(out)
         if self.config["dropout"]:
             out = self.dropout(out) # Applying dropout after ReLU
 
         out=self.fc2(out)
-        if self.config["norm"]==5:
-            out=self.norm5(out)
+        if self.config["norm"]==7:
+            out=self.norm7(out)
         out = self.activation(out)
         if self.config["dropout"]:
             out = self.dropout(out) # Applying dropout after ReLU
 
         out = self.fc3(out)
-
+        out = torch.sigmoid(out)
         return out

@@ -17,11 +17,17 @@ class ImageDataset(Dataset):
             else:
                 self.labels.append(0)
         
+        # self.transform =transforms.Compose([
+        #     transforms.Resize((128, 128)),
+        #     transforms.ToTensor(),
+        #     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        #     ])
         self.transform =transforms.Compose([
-            transforms.Resize((128, 128)),
+            transforms.Resize((512, 512)),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-            ])
+        ])
+
         self.device=device
 
     def __len__(self):

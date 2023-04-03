@@ -9,11 +9,15 @@ from tqdm import tqdm
 from torch.utils.tensorboard import SummaryWriter
 import argparse
 from accelerate import Accelerator
+import os
+from PIL import Image
+
+
 accelerator = Accelerator()
 parser = argparse.ArgumentParser(description='Xiao is not handsome')
 parser.add_argument('--cuda', type=int, default=0)
-parser.add_argument('--batch', type=int, default=128)
-parser.add_argument('--norm', type=int, default=1)
+parser.add_argument('--batch', type=int, default=64)
+parser.add_argument('--norm', type=int, default=1, help="which layer to add normalization: 1-8")
 parser.add_argument('--epoch', type=int, default=40)
 parser.add_argument('--dropout', type=int, default=0, help="bool: whether or not to use drop out")
 parser.add_argument('--weight_decay', type=int, default=0, help="bool: whether or not to use weight decay (L2 regularization)")
@@ -46,8 +50,7 @@ def valid(net,val_dataloader,epoch):
         epoch_loss=0
         correct=0
         total=0
-        for i,data in enumerate(val_dataloader):
-            img,gt=data
+        for i,(img,gt) in enumerate(val_dataloader):
             img=img.to(device)
             gt=gt.to(device)
             y=net(img)
@@ -79,8 +82,7 @@ def train(net, trainloader, valloader):
         epoch_loss=0
         correct=0
         total=0
-        for i,data in enumerate(trainloader):
-            img,gt=data
+        for i,(img,gt) in enumerate(trainloader):
             img=img.to(device)
             gt=gt.to(device)
             opt.zero_grad()
@@ -121,6 +123,20 @@ def test(net, testloader):
             cls=torch.argmax(y,dim=1)
             correct+=(gt==cls).sum().item()
             total+=gt.size(0)
+
+            # Save wrongly classified images
+            for j in range(img.size(0)):
+                if cls[j] != gt[j]:
+                    img_j = img[j].cpu()
+                    img_j = img_j * torch.tensor([0.229, 0.224, 0.225]).view(3, 1, 1) + torch.tensor(
+                        [0.485, 0.456, 0.406]).view(3, 1, 1)
+                    img_j = (img_j * 255).to(torch.uint8)
+                    label_j = gt[j].item()
+                    cls_j = cls[j].item()
+                    filename = f"wrong_{i}_{j}_label{label_j}_class{cls_j}.png"
+                    folder = "plots/wrong"
+                    os.makedirs(folder, exist_ok=True)
+                    Image.fromarray(img_j.permute(1, 2, 0).numpy()).save(os.path.join(folder, filename))
             
         print("Test acc",correct/total)
         
@@ -129,7 +145,7 @@ if __name__=="__main__":
     dataset = ImageDataset(base_dir + config["mode"],device=device)
     trainset, valset = random_split(dataset, [int(0.9 * len(dataset)), len(dataset)-int(0.9 * len(dataset))])
     trainloader = DataLoader(trainset, batch_size=config["batch"], shuffle=True, num_workers=2)
-    val_loader = loader = DataLoader(valset, batch_size=config["batch"], shuffle=True, num_workers=2)
+    val_loader = DataLoader(valset, batch_size=config["batch"], shuffle=True, num_workers=2)
 
     dataset = ImageDataset(base_dir + 'test',device=device)
     testloader = DataLoader(dataset, batch_size=config["batch"], shuffle=True, num_workers=2)
