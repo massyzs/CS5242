@@ -19,10 +19,10 @@ class ImageDataset(Dataset):
         
         if (config["data_augmentation"] and train):
             self.transform = transforms.Compose([
-                transforms.Resize((512, 512)),
-                transforms.RandomHorizontalFlip(p=0.5),   # Randomly flip the image horizontally with probability 0.5
-                transforms.RandomRotation(degrees=30),    # Randomly rotate the image up to 30 degrees
-                transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.2), # Randomly adjust brightness, contrast, saturation and hue
+                transforms.Resize((128, 128)),
+                # transforms.RandomHorizontalFlip(p=0.5),   # Randomly flip the image horizontally with probability 0.5
+                # transforms.RandomRotation(degrees=30),    # Randomly rotate the image up to 30 degrees
+                # transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.2), # Randomly adjust brightness, contrast, saturation and hue
                 transforms.ToTensor(),
                 transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
             ])
@@ -33,7 +33,7 @@ class ImageDataset(Dataset):
             #     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
             #     ])
             self.transform =transforms.Compose([
-                transforms.Resize((512, 512)),
+                transforms.Resize((128, 128)),
                 transforms.ToTensor(),
                 transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
             ])
