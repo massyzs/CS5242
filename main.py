@@ -15,7 +15,7 @@ from PIL import Image
 accelerator = Accelerator()
 parser = argparse.ArgumentParser(description='NA')
 parser.add_argument('--cuda', type=int, default=0)
-parser.add_argument('--batch', type=int, default=32)
+parser.add_argument('--batch', type=int, default=64)
 parser.add_argument('--norm', type=int, default=3, help="which layer to add normalization: 1-8")
 parser.add_argument('--epoch', type=int, default=40)
 parser.add_argument('--dropout', type=int, default=1, help="bool: whether or not to use drop out")
@@ -48,6 +48,7 @@ device=torch.device(f"cuda:{device}")
 
 def valid(net,val_dataloader,epoch):
     with torch.no_grad():
+        net.eval()
         criertion=nn.CrossEntropyLoss()
         net.to(device)
         epoch_loss=0
@@ -83,6 +84,7 @@ def train(net, trainloader, testloader):
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, 'min',patience=5,verbose=True,factor=0.8)
     
     for epoch in range(config["epoch"]):
+        net.train()
         epoch_loss=0
         correct=0
         total=0
@@ -95,6 +97,7 @@ def train(net, trainloader, testloader):
             
             cls=torch.argmax(y,dim=1)
             loss=criertion(y,gt)
+            # breakpoint()
             correct+=(gt==cls).sum().item()
             total+=gt.size(0)
             loss.backward()
@@ -103,9 +106,10 @@ def train(net, trainloader, testloader):
         scheduler.step(epoch_loss/len(trainloader))
        
         print(f"[epoch:{epoch}]","loss",epoch_loss/len(trainloader),"acc",correct/total)
-        if epoch%5==0 or epoch>=config["epoch"]-2:
+        # if epoch%2==0 or epoch>=config["epoch"]-2:
             
-            val_loss,val_acc=valid(net,testloader,epoch)
+        val_loss,val_acc=valid(net,testloader,epoch)
+        breakpoint()
             # val_loss,val_acc=valid(net,valloader,epoch)
     return net
            
@@ -133,10 +137,10 @@ if __name__=="__main__":
     net = LeNet(2,config)
     dataset = ImageDataset(base_dir + config["mode"],device=device,config=config,train=True)
     trainset, valset = random_split(dataset, [int(0.9 * len(dataset)), len(dataset)-int(0.9 * len(dataset))])
-    trainloader = DataLoader(trainset, batch_size=config["batch"], shuffle=True, num_workers=2)
+    trainloader = DataLoader(trainset, batch_size=config["batch"], shuffle=True, num_workers=8,drop_last=True)
     # val_loader = DataLoader(valset, batch_size=config["batch"], shuffle=True, num_workers=2)
     test_dataset = ImageDataset(base_dir + 'test',device=device,config=config,train=False)
-    testloader = DataLoader(test_dataset, batch_size=config["batch"], shuffle=True, num_workers=2)
+    testloader = DataLoader(test_dataset, batch_size=config["batch"], shuffle=True, num_workers=8,drop_last=True)
 
     dataset = ImageDataset(base_dir + 'test',device=device,config=config,train=False)
     # testloader = DataLoader(dataset, batch_size=config["batch"], shuffle=True, num_workers=2)

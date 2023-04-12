@@ -1,53 +1,27 @@
 nohup: ignoring input
 /home/xiao/miniconda3/envs/torch/lib/python3.10/site-packages/torchvision/io/image.py:13: UserWarning: Failed to load image Python extension: /home/xiao/miniconda3/envs/torch/lib/python3.10/site-packages/torchvision/image.so: undefined symbol: _ZN5torch3jit17parseSchemaOrNameERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
   warn(f"Failed to load image Python extension: {e}")
-[epoch:0] loss 0.6659832684432759 acc 0.6035950804162725
-[epoch:0] test loss 0.7087171118834923 test acc 0.41163793103448276
-[epoch:1] loss 0.6192564946763656 acc 0.6688741721854304
-[epoch:2] loss 0.589625688160167 acc 0.7738883632923368
-[epoch:3] loss 0.5383518513511208 acc 0.8448438978240302
-[epoch:4] loss 0.49820193911299987 acc 0.8836329233680227
-[epoch:5] loss 0.4553054080289953 acc 0.9167455061494797
-[epoch:5] test loss 0.7328189097601792 test acc 0.5301724137931034
-[epoch:6] loss 0.4290105227161856 acc 0.934720908230842
-[epoch:7] loss 0.4017927296021405 acc 0.9526963103122044
-[epoch:8] loss 0.38293575626962323 acc 0.9621570482497634
-[epoch:9] loss 0.3700814895770129 acc 0.9631031220435194
-[epoch:10] loss 0.3642200336736791 acc 0.9687795648060549
-[epoch:10] test loss 0.772786533010417 test acc 0.5021551724137931
-[epoch:11] loss 0.35462872508694143 acc 0.9744560075685903
-[epoch:12] loss 0.34554434786824617 acc 0.9801324503311258
-[epoch:13] loss 0.34094521490966573 acc 0.9829706717123936
-[epoch:14] loss 0.33607614566298094 acc 0.9867549668874173
-[epoch:15] loss 0.3303055298679015 acc 0.9914853358561968
-[epoch:15] test loss 0.7726887341203361 test acc 0.5118534482758621
-[epoch:16] loss 0.3291955853209776 acc 0.9895931882686849
-[epoch:17] loss 0.3276956020032658 acc 0.9914853358561968
-[epoch:18] loss 0.32730680090539593 acc 0.9905392620624409
-[epoch:19] loss 0.32677099985234875 acc 0.9914853358561968
-[epoch:20] loss 0.32507751443806815 acc 0.9924314096499527
-[epoch:20] test loss 0.7558359606512661 test acc 0.5398706896551724
-[epoch:21] loss 0.32519150306196776 acc 0.9924314096499527
-[epoch:22] loss 0.3254837262279847 acc 0.9914853358561968
-[epoch:23] loss 0.3269649139221977 acc 0.9905392620624409
-[epoch:24] loss 0.3251362144947052 acc 0.9905392620624409
-[epoch:25] loss 0.3237367500277126 acc 0.9924314096499527
-[epoch:25] test loss 0.7706934933004708 test acc 0.521551724137931
-[epoch:26] loss 0.32301606676157785 acc 0.9924314096499527
-[epoch:27] loss 0.32187162602649017 acc 0.9933774834437086
-[epoch:28] loss 0.32083944713368134 acc 0.9943235572374646
-[epoch:29] loss 0.3205862106645809 acc 0.9943235572374646
-[epoch:30] loss 0.3202860916362089 acc 0.9952696310312205
-[epoch:30] test loss 0.7483257569115738 test acc 0.540948275862069
-[epoch:31] loss 0.321114644408226 acc 0.9962157048249763
-[epoch:32] loss 0.3229875985313864 acc 0.9952696310312205
-[epoch:33] loss 0.3192560418563731 acc 0.9962157048249763
-[epoch:34] loss 0.31883979106650634 acc 0.9962157048249763
-[epoch:35] loss 0.3167862515239155 acc 0.9990539262062441
-[epoch:35] test loss 0.7570740375025519 test acc 0.5377155172413793
-[epoch:36] loss 0.31611488496556 acc 0.9990539262062441
-[epoch:37] loss 0.3172115937751882 acc 0.9981078524124882
-[epoch:38] loss 0.3155784203725703 acc 1.0
-[epoch:38] test loss 0.7167017110462847 test acc 0.5862068965517241
-[epoch:39] loss 0.3186482901082319 acc 0.9952696310312205
-[epoch:39] test loss 0.7424493041531793 test acc 0.5474137931034483
+[epoch:0] loss 0.6570576876401901 acc 0.61328125
+[epoch:0] test loss 0.7195368877479008 test acc 0.40513392857142855
+> /home/xiao/code/CS5242/CS5242/main.py(86)train()
+-> for epoch in range(config["epoch"]):
+(Pdb) Traceback (most recent call last):
+  File "/home/xiao/code/CS5242/CS5242/main.py", line 148, in <module>
+    net=train(net,trainloader,testloader)
+  File "/home/xiao/code/CS5242/CS5242/main.py", line 86, in train
+    for epoch in range(config["epoch"]):
+  File "/home/xiao/code/CS5242/CS5242/main.py", line 86, in train
+    for epoch in range(config["epoch"]):
+  File "/home/xiao/miniconda3/envs/torch/lib/python3.10/bdb.py", line 90, in trace_dispatch
+    return self.dispatch_line(frame)
+  File "/home/xiao/miniconda3/envs/torch/lib/python3.10/bdb.py", line 114, in dispatch_line
+    self.user_line(frame)
+  File "/home/xiao/miniconda3/envs/torch/lib/python3.10/pdb.py", line 262, in user_line
+    self.interaction(frame, None)
+  File "/home/xiao/miniconda3/envs/torch/lib/python3.10/pdb.py", line 357, in interaction
+    self._cmdloop()
+  File "/home/xiao/miniconda3/envs/torch/lib/python3.10/pdb.py", line 322, in _cmdloop
+    self.cmdloop()
+  File "/home/xiao/miniconda3/envs/torch/lib/python3.10/cmd.py", line 126, in cmdloop
+    line = input(self.prompt)
+OSError: [Errno 9] Bad file descriptor

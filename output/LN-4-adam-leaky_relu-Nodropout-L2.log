@@ -1,53 +1,27 @@
 nohup: ignoring input
 /home/xiao/miniconda3/envs/torch/lib/python3.10/site-packages/torchvision/io/image.py:13: UserWarning: Failed to load image Python extension: /home/xiao/miniconda3/envs/torch/lib/python3.10/site-packages/torchvision/image.so: undefined symbol: _ZN5torch3jit17parseSchemaOrNameERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
   warn(f"Failed to load image Python extension: {e}")
-[epoch:0] loss 0.6583653705961564 acc 0.641438032166509
-[epoch:0] test loss 0.6656573003736036 test acc 0.5872844827586207
-[epoch:1] loss 0.5486113104750129 acc 0.8325449385052034
-[epoch:2] loss 0.48212790839812336 acc 0.9205298013245033
-[epoch:3] loss 0.43432187069864836 acc 0.9583727530747398
-[epoch:4] loss 0.40782973082626567 acc 0.9820245979186376
-[epoch:5] loss 0.3868984027820475 acc 0.9858088930936613
-[epoch:5] test loss 0.7265197963550173 test acc 0.5247844827586207
-[epoch:6] loss 0.37395765237948475 acc 0.9924314096499527
-[epoch:7] loss 0.3655165021910387 acc 0.9943235572374646
-[epoch:8] loss 0.35915637717527504 acc 0.9952696310312205
-[epoch:9] loss 0.35421160038779764 acc 0.9962157048249763
-[epoch:10] loss 0.34968799703261433 acc 0.9962157048249763
-[epoch:10] test loss 0.6949876382433134 test acc 0.5786637931034483
-[epoch:11] loss 0.34616923419868245 acc 0.9971617786187322
-[epoch:12] loss 0.3432123371783425 acc 0.9971617786187322
-[epoch:13] loss 0.3406655542990741 acc 0.9981078524124882
-[epoch:14] loss 0.3382849439102061 acc 0.9981078524124882
-[epoch:15] loss 0.3363236048642327 acc 0.9981078524124882
-[epoch:15] test loss 0.6889119723747517 test acc 0.5829741379310345
-[epoch:16] loss 0.3346630755592795 acc 0.9981078524124882
-[epoch:17] loss 0.3329841319252463 acc 0.9981078524124882
-[epoch:18] loss 0.33173121774897857 acc 0.9981078524124882
-[epoch:19] loss 0.33072134589447694 acc 0.9981078524124882
-[epoch:20] loss 0.3295305502765319 acc 0.9981078524124882
-[epoch:20] test loss 0.6980436999222328 test acc 0.5818965517241379
-[epoch:21] loss 0.32873614395365996 acc 0.9981078524124882
-[epoch:22] loss 0.32775505938950705 acc 0.9981078524124882
-[epoch:23] loss 0.32700318273376017 acc 0.9981078524124882
-[epoch:24] loss 0.32630814874873443 acc 0.9981078524124882
-[epoch:25] loss 0.3258033184444203 acc 0.9981078524124882
-[epoch:25] test loss 0.7073344033339928 test acc 0.5754310344827587
-[epoch:26] loss 0.32520590284291434 acc 0.9981078524124882
-[epoch:27] loss 0.3246585919576533 acc 0.9981078524124882
-[epoch:28] loss 0.32406078016056733 acc 0.9981078524124882
-[epoch:29] loss 0.32369817618061514 acc 0.9981078524124882
-[epoch:30] loss 0.3232697739320643 acc 0.9981078524124882
-[epoch:30] test loss 0.7065453817104471 test acc 0.5754310344827587
-[epoch:31] loss 0.3228692009168513 acc 0.9981078524124882
-[epoch:32] loss 0.32242467999458313 acc 0.9981078524124882
-[epoch:33] loss 0.32209083788535176 acc 0.9981078524124882
-[epoch:34] loss 0.32184455587583427 acc 0.9981078524124882
-[epoch:35] loss 0.3215478036333533 acc 0.9981078524124882
-[epoch:35] test loss 0.7112604050800718 test acc 0.5700431034482759
-[epoch:36] loss 0.32126981019973755 acc 0.9981078524124882
-[epoch:37] loss 0.3209457327337826 acc 0.9981078524124882
-[epoch:38] loss 0.32076207416899066 acc 0.9981078524124882
-[epoch:38] test loss 0.7088111844556085 test acc 0.572198275862069
-[epoch:39] loss 0.3204849073115517 acc 0.9981078524124882
-[epoch:39] test loss 0.7061544553986911 test acc 0.5775862068965517
+Traceback (most recent call last):
+  File "/home/xiao/code/CS5242/CS5242/main.py", line 148, in <module>
+    net=train(net,trainloader,testloader)
+  File "/home/xiao/code/CS5242/CS5242/main.py", line 91, in train
+    for i,(img,gt) in enumerate(trainloader):
+  File "/home/xiao/miniconda3/envs/torch/lib/python3.10/site-packages/torch/utils/data/dataloader.py", line 634, in __next__
+    data = self._next_data()
+  File "/home/xiao/miniconda3/envs/torch/lib/python3.10/site-packages/torch/utils/data/dataloader.py", line 1329, in _next_data
+    idx, data = self._get_data()
+  File "/home/xiao/miniconda3/envs/torch/lib/python3.10/site-packages/torch/utils/data/dataloader.py", line 1295, in _get_data
+    success, data = self._try_get_data()
+  File "/home/xiao/miniconda3/envs/torch/lib/python3.10/site-packages/torch/utils/data/dataloader.py", line 1133, in _try_get_data
+    data = self._data_queue.get(timeout=timeout)
+  File "/home/xiao/miniconda3/envs/torch/lib/python3.10/multiprocessing/queues.py", line 113, in get
+    if not self._poll(timeout):
+  File "/home/xiao/miniconda3/envs/torch/lib/python3.10/multiprocessing/connection.py", line 257, in poll
+    return self._poll(timeout)
+  File "/home/xiao/miniconda3/envs/torch/lib/python3.10/multiprocessing/connection.py", line 424, in _poll
+    r = wait([self], timeout)
+  File "/home/xiao/miniconda3/envs/torch/lib/python3.10/multiprocessing/connection.py", line 931, in wait
+    ready = selector.select(timeout)
+  File "/home/xiao/miniconda3/envs/torch/lib/python3.10/selectors.py", line 416, in select
+    fd_event_list = self._selector.poll(timeout)
+KeyboardInterrupt

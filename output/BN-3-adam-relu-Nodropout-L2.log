@@ -1,21 +1,27 @@
 nohup: ignoring input
 /home/xiao/miniconda3/envs/torch/lib/python3.10/site-packages/torchvision/io/image.py:13: UserWarning: Failed to load image Python extension: /home/xiao/miniconda3/envs/torch/lib/python3.10/site-packages/torchvision/image.so: undefined symbol: _ZN5torch3jit17parseSchemaOrNameERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
   warn(f"Failed to load image Python extension: {e}")
-Traceback (most recent call last):
-  File "/home/xiao/code/CS5242/CS5242/main.py", line 144, in <module>
+[epoch:0] loss 0.61934944242239 acc 0.7744140625
+[epoch:0] test loss 0.6856232285499573 test acc 0.6316964285714286
+> /home/xiao/code/CS5242/CS5242/main.py(86)train()
+-> for epoch in range(config["epoch"]):
+(Pdb) Traceback (most recent call last):
+  File "/home/xiao/code/CS5242/CS5242/main.py", line 148, in <module>
     net=train(net,trainloader,testloader)
-  File "/home/xiao/code/CS5242/CS5242/main.py", line 94, in train
-    y=net(img)
-  File "/home/xiao/miniconda3/envs/torch/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1501, in _call_impl
-    return forward_call(*args, **kwargs)
-  File "/home/xiao/code/CS5242/CS5242/lenet.py", line 83, in forward
-    out=self.norm3(out)
-  File "/home/xiao/miniconda3/envs/torch/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1501, in _call_impl
-    return forward_call(*args, **kwargs)
-  File "/home/xiao/miniconda3/envs/torch/lib/python3.10/site-packages/torch/nn/modules/batchnorm.py", line 171, in forward
-    return F.batch_norm(
-  File "/home/xiao/miniconda3/envs/torch/lib/python3.10/site-packages/torch/nn/functional.py", line 2448, in batch_norm
-    _verify_batch_size(input.size())
-  File "/home/xiao/miniconda3/envs/torch/lib/python3.10/site-packages/torch/nn/functional.py", line 2416, in _verify_batch_size
-    raise ValueError("Expected more than 1 value per channel when training, got input size {}".format(size))
-ValueError: Expected more than 1 value per channel when training, got input size torch.Size([1, 120])
+  File "/home/xiao/code/CS5242/CS5242/main.py", line 86, in train
+    for epoch in range(config["epoch"]):
+  File "/home/xiao/code/CS5242/CS5242/main.py", line 86, in train
+    for epoch in range(config["epoch"]):
+  File "/home/xiao/miniconda3/envs/torch/lib/python3.10/bdb.py", line 90, in trace_dispatch
+    return self.dispatch_line(frame)
+  File "/home/xiao/miniconda3/envs/torch/lib/python3.10/bdb.py", line 114, in dispatch_line
+    self.user_line(frame)
+  File "/home/xiao/miniconda3/envs/torch/lib/python3.10/pdb.py", line 262, in user_line
+    self.interaction(frame, None)
+  File "/home/xiao/miniconda3/envs/torch/lib/python3.10/pdb.py", line 357, in interaction
+    self._cmdloop()
+  File "/home/xiao/miniconda3/envs/torch/lib/python3.10/pdb.py", line 322, in _cmdloop
+    self.cmdloop()
+  File "/home/xiao/miniconda3/envs/torch/lib/python3.10/cmd.py", line 126, in cmdloop
+    line = input(self.prompt)
+OSError: [Errno 9] Bad file descriptor

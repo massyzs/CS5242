@@ -17,7 +17,7 @@ class LeNet(nn.Module):
         super(LeNet, self).__init__()
         self.conv1 = nn.Conv2d(3, 6, 5)
         self.conv2 = nn.Conv2d(6, 16, 5)
-        self.fc1   = nn.Linear(16*29*29, 120)
+        self.fc1   = nn.Linear(13456, 120)
         self.fc2   = nn.Linear(120, 84)
         self.fc3   = nn.Linear(84, num_classes)
        
@@ -53,7 +53,7 @@ class LeNet(nn.Module):
             out=self.norm1(out)
             return tmp,out
     def forward(self, x):
-        # breakpoint()
+        
         
         out = self.conv1(x)
       
@@ -73,9 +73,9 @@ class LeNet(nn.Module):
         if self.config["dropout"]:
             out = self.dropout(out) # Applying dropout after max pooling
         
-        
+        # breakpoint()
 
-        out = out.view(out.size(0), -1)
+        out = out.view(self.config["batch"], -1)
 
         out=self.fc1(out)
         out = self.activation(out)

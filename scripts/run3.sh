@@ -5,7 +5,7 @@ do
         for layer in 1 2 3 4
         do
            
-            nohup python3 -u /home/xiao/code/CS5242/CS5242/main.py --cuda 0 --norm_type BN --norm "$layer" --epoch 40 --dropout 1 --weight_decay 1 --opt adam --activation "$activ" --batch 32 &> /home/xiao/code/CS5242/CS5242/output/BN-"$layer"-adam-"$activ"-Dropout-L2.log
+            nohup python3 -u /home/xiao/code/CS5242/CS5242/main.py --cuda 0 --norm_type BN --norm "$layer" --epoch 40 --dropout 1 --weight_decay 1 --opt adam --activation "$activ" --batch 64 &> /home/xiao/code/CS5242/CS5242/output/BN-"$layer"-adam-"$activ"-Dropout-L2.log
            
         done
         
