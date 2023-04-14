@@ -109,7 +109,7 @@ def train(net, trainloader, testloader):
         # if epoch%2==0 or epoch>=config["epoch"]-2:
             
         val_loss,val_acc=valid(net,testloader,epoch)
-        breakpoint()
+        # breakpoint()
             # val_loss,val_acc=valid(net,valloader,epoch)
     return net
            

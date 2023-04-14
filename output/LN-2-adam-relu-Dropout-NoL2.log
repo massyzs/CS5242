@@ -1,27 +1,83 @@
 nohup: ignoring input
 /home/xiao/miniconda3/envs/torch/lib/python3.10/site-packages/torchvision/io/image.py:13: UserWarning: Failed to load image Python extension: /home/xiao/miniconda3/envs/torch/lib/python3.10/site-packages/torchvision/image.so: undefined symbol: _ZN5torch3jit17parseSchemaOrNameERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
   warn(f"Failed to load image Python extension: {e}")
-[epoch:0] loss 0.6703511849045753 acc 0.5888671875
-[epoch:0] test loss 0.7696787970406669 test acc 0.40625
-> /home/xiao/code/CS5242/CS5242/main.py(86)train()
--> for epoch in range(config["epoch"]):
-(Pdb) Traceback (most recent call last):
-  File "/home/xiao/code/CS5242/CS5242/main.py", line 148, in <module>
-    net=train(net,trainloader,testloader)
-  File "/home/xiao/code/CS5242/CS5242/main.py", line 86, in train
-    for epoch in range(config["epoch"]):
-  File "/home/xiao/code/CS5242/CS5242/main.py", line 86, in train
-    for epoch in range(config["epoch"]):
-  File "/home/xiao/miniconda3/envs/torch/lib/python3.10/bdb.py", line 90, in trace_dispatch
-    return self.dispatch_line(frame)
-  File "/home/xiao/miniconda3/envs/torch/lib/python3.10/bdb.py", line 114, in dispatch_line
-    self.user_line(frame)
-  File "/home/xiao/miniconda3/envs/torch/lib/python3.10/pdb.py", line 262, in user_line
-    self.interaction(frame, None)
-  File "/home/xiao/miniconda3/envs/torch/lib/python3.10/pdb.py", line 357, in interaction
-    self._cmdloop()
-  File "/home/xiao/miniconda3/envs/torch/lib/python3.10/pdb.py", line 322, in _cmdloop
-    self.cmdloop()
-  File "/home/xiao/miniconda3/envs/torch/lib/python3.10/cmd.py", line 126, in cmdloop
-    line = input(self.prompt)
-OSError: [Errno 9] Bad file descriptor
+[epoch:0] loss 0.6686935126781464 acc 0.5888671875
+[epoch:0] test loss 0.7483777914728437 test acc 0.40401785714285715
+[epoch:1] loss 0.6275885812938213 acc 0.6669921875
+[epoch:1] test loss 0.6888782211712429 test acc 0.5178571428571429
+[epoch:2] loss 0.5753866136074066 acc 0.7724609375
+[epoch:2] test loss 0.6800959919180188 test acc 0.5725446428571429
+[epoch:3] loss 0.5286659467965364 acc 0.82421875
+[epoch:3] test loss 0.6844143271446228 test acc 0.5848214285714286
+[epoch:4] loss 0.4916892182081938 acc 0.8447265625
+[epoch:4] test loss 0.6941565998962947 test acc 0.5792410714285714
+[epoch:5] loss 0.45406332053244114 acc 0.8857421875
+[epoch:5] test loss 0.6921984255313873 test acc 0.578125
+[epoch:6] loss 0.4239134881645441 acc 0.9169921875
+[epoch:6] test loss 0.6960483874593463 test acc 0.5870535714285714
+[epoch:7] loss 0.4136111009865999 acc 0.921875
+[epoch:7] test loss 0.6867249693189349 test acc 0.5881696428571429
+[epoch:8] loss 0.3964559733867645 acc 0.935546875
+[epoch:8] test loss 0.7138742165906089 test acc 0.578125
+[epoch:9] loss 0.378028254956007 acc 0.953125
+[epoch:9] test loss 0.7071144921439034 test acc 0.5747767857142857
+[epoch:10] loss 0.374170271679759 acc 0.9560546875
+[epoch:10] test loss 0.6945727467536926 test acc 0.5881696428571429
+[epoch:11] loss 0.3678274229168892 acc 0.962890625
+[epoch:11] test loss 0.6953191033431462 test acc 0.5915178571428571
+[epoch:12] loss 0.35425232723355293 acc 0.9755859375
+[epoch:12] test loss 0.6882201646055494 test acc 0.5982142857142857
+[epoch:13] loss 0.3586633410304785 acc 0.9619140625
+[epoch:13] test loss 0.6956032003675189 test acc 0.5825892857142857
+[epoch:14] loss 0.35678431391716003 acc 0.96484375
+[epoch:14] test loss 0.6826018818787166 test acc 0.6026785714285714
+[epoch:15] loss 0.3464618567377329 acc 0.9794921875
+[epoch:15] test loss 0.678063724722181 test acc 0.5993303571428571
+[epoch:16] loss 0.3457552306354046 acc 0.978515625
+[epoch:16] test loss 0.6827806574957711 test acc 0.6049107142857143
+[epoch:17] loss 0.3382573891431093 acc 0.986328125
+[epoch:17] test loss 0.6838819980621338 test acc 0.6037946428571429
+[epoch:18] loss 0.3358151540160179 acc 0.986328125
+[epoch:18] test loss 0.6808228365012577 test acc 0.6049107142857143
+[epoch:19] loss 0.3363351281732321 acc 0.9833984375
+[epoch:19] test loss 0.7101520299911499 test acc 0.5714285714285714
+[epoch:20] loss 0.3316865246742964 acc 0.9912109375
+[epoch:20] test loss 0.692565415586744 test acc 0.5904017857142857
+[epoch:21] loss 0.3333201985806227 acc 0.98828125
+[epoch:21] test loss 0.6815748683043888 test acc 0.6049107142857143
+[epoch:22] loss 0.3311536815017462 acc 0.9912109375
+[epoch:22] test loss 0.6809053421020508 test acc 0.6116071428571429
+[epoch:23] loss 0.3299322593957186 acc 0.9892578125
+[epoch:23] test loss 0.6830054308686938 test acc 0.609375
+[epoch:24] loss 0.32679123990237713 acc 0.9931640625
+[epoch:24] test loss 0.685062689440591 test acc 0.6037946428571429
+[epoch:25] loss 0.3276468887925148 acc 0.9921875
+[epoch:25] test loss 0.6633233768599374 test acc 0.6272321428571429
+[epoch:26] loss 0.3264937028288841 acc 0.9912109375
+[epoch:26] test loss 0.6719061732292175 test acc 0.6149553571428571
+[epoch:27] loss 0.324533237144351 acc 0.9931640625
+[epoch:27] test loss 0.6776560502392905 test acc 0.6060267857142857
+[epoch:28] loss 0.3248303607106209 acc 0.9912109375
+[epoch:28] test loss 0.6711691575390952 test acc 0.6138392857142857
+[epoch:29] loss 0.3226965144276619 acc 0.9951171875
+[epoch:29] test loss 0.6492964667933327 test acc 0.6573660714285714
+[epoch:30] loss 0.32076786644756794 acc 0.998046875
+[epoch:30] test loss 0.6581418216228485 test acc 0.6350446428571429
+[epoch:31] loss 0.32260747998952866 acc 0.9970703125
+[epoch:31] test loss 0.6670990671430316 test acc 0.6205357142857143
+[epoch:32] loss 0.3211727812886238 acc 0.99609375
+[epoch:32] test loss 0.6648297778197697 test acc 0.6149553571428571
+[epoch:33] loss 0.3214409686625004 acc 0.99609375
+[epoch:33] test loss 0.673988653080804 test acc 0.6116071428571429
+[epoch:34] loss 0.3193804193288088 acc 0.998046875
+[epoch:34] test loss 0.6730924461569104 test acc 0.6227678571428571
+[epoch:35] loss 0.32200357131659985 acc 0.994140625
+[epoch:35] test loss 0.6546320872647422 test acc 0.640625
+[epoch:36] loss 0.3199761398136616 acc 0.9970703125
+[epoch:36] test loss 0.649981072970799 test acc 0.640625
+[epoch:37] loss 0.3192682471126318 acc 0.99609375
+[epoch:37] test loss 0.6397711932659149 test acc 0.6629464285714286
+[epoch:38] loss 0.31804652325809 acc 0.998046875
+[epoch:38] test loss 0.6607146859169006 test acc 0.6305803571428571
+[epoch:39] loss 0.31756565161049366 acc 0.998046875
+[epoch:39] test loss 0.6785857422011239 test acc 0.6149553571428571
