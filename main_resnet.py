@@ -7,25 +7,24 @@ import torch.optim as optim
 import torch.nn as nn
 from tqdm import tqdm
 import argparse
-# from accelerate import Accelerator
+from accelerate import Accelerator
 import os
 from PIL import Image
 
 
-# accelerator = Accelerator()
+accelerator = Accelerator()
 parser = argparse.ArgumentParser(description='NA')
 parser.add_argument('--cuda', type=int, default=0)
-parser.add_argument('--batch', type=int, default=128)
-parser.add_argument('--norm', type=int, default=1, help="which layer to add normalization: 1-8")
-parser.add_argument('--epoch', type=int, default=60)
+parser.add_argument('--batch', type=int, default=64)
+parser.add_argument('--norm', type=int, default=3, help="which layer to add normalization: 1-8")
+parser.add_argument('--epoch', type=int, default=40)
 parser.add_argument('--dropout', type=int, default=1, help="bool: whether or not to use drop out")
-parser.add_argument('--weight_decay', type=int, default=0, help="bool: whether or not to use weight decay (L2 regularization)")
+parser.add_argument('--weight_decay', type=int, default=1, help="bool: whether or not to use weight decay (L2 regularization)")
 parser.add_argument('--norm_type', type=str, default="BN",help="BN for batchnorm, LN for LayerNorm")
 parser.add_argument('--opt', type=str, default="adam", help="optimizer type: adam or sgd")
 parser.add_argument('--activation', type=str, default="relu", help="leakyrelu, relu, sigmoid, tanh")
 parser.add_argument('--aug', type=int, default=1, help="bool: whether or not to use data augmentation")
 parser.add_argument('--save', type=int, default=0, help="bool: whether or not to use data augmentation")
-parser.add_argument('--rate', type=float, default=0.7, help="bool: whether or not to use data augmentation")
 args = parser.parse_args()
 config={
     "mode": "train",
@@ -40,18 +39,37 @@ config={
     "opt": args.opt,
     "activation": args.activation,
     "data_augmentation":bool(args.aug),
-    "save":bool(args.save),
-    "dropout_rate":args.rate
+    "save":bool(args.save)
 }
 
 base_dir="/home/xiao/code/CS5242/dataset/"
 device=config["cuda"]
 device=torch.device(f"cuda:{device}")
 
+import torchvision.models as models
+
+# Load the pretrained ResNet50 model
+resnet50 = models.resnet50(pretrained=True)
+
+# Replace the last fully connected layer with a new one with 2 output nodes
+num_features = resnet50.fc.in_features
+resnet50.fc = nn.Linear(num_features, 2)
+
+# Set up the loss function for binary classification
+criterion = nn.BCEWithLogitsLoss()
+
+# Set up the optimizer
+optimizer = torch.optim.SGD(resnet50.parameters(), lr=0.001, momentum=0.9)
+
+# Move the model and loss function to GPU if available
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+resnet50.to(device)
+criterion.to(device)
+
 def valid(net,val_dataloader,epoch):
     with torch.no_grad():
         net.eval()
-        criertion=nn.CrossEntropyLoss()
+        # criertion=nn.CrossEntropyLoss()
         net.to(device)
         epoch_loss=0
         correct=0
@@ -59,20 +77,20 @@ def valid(net,val_dataloader,epoch):
         for i,(img,gt) in enumerate(val_dataloader):
             img=img.to(device)
             gt=gt.to(device)
-            y=net(img,config)
-            loss=criertion(y,gt)
+            y=net(img)
+            # loss=criertion(y,gt)
             cls=torch.argmax(y,dim=1)
             correct+=(gt==cls).sum().item()
             total+=gt.size(0)
-            epoch_loss+=loss.item()
-        print(f"[epoch:{epoch}]","test loss",epoch_loss/len(val_dataloader),"test acc",correct/total)
+           
+        print(f"[epoch:{epoch}]","test acc",correct/total)
         return epoch_loss/len(val_dataloader),correct/len(val_dataloader)
     
-def train(net, trainloader, testloader):
+def train(net, trainloader, testloader,criertion):
     net.train()
     net.to(device)
-    criertion=nn.CrossEntropyLoss()
-    
+    # criertion=nn.CrossEntropyLoss()
+    criterion = nn.CrossEntropyLoss()
     if config["opt"] == "sgd":
         if config["weight_decay"]:
             opt=optim.SGD(net.parameters(), lr=config["lr"], weight_decay=0.0005)
@@ -95,11 +113,11 @@ def train(net, trainloader, testloader):
             gt=gt.to(device)
             opt.zero_grad()
             # breakpoint()
-            y=net(img,config)
+            y=net(img)
             one_gt=torch.nn.functional.one_hot(gt, num_classes=2)
             one_gt=torch.tensor(one_gt,dtype=torch.float32)
+            
             cls=torch.argmax(y,dim=1)
-            # breakpoint()
             loss=criertion(y,one_gt)
             # breakpoint()
             correct+=(gt==cls).sum().item()
@@ -108,10 +126,7 @@ def train(net, trainloader, testloader):
             opt.step()
             epoch_loss+=loss.item()
         scheduler.step(epoch_loss/len(trainloader))
-        if epoch%2==0:
-            config["dropout"]=True
-        else:
-            config["dropout"]=False
+       
         print(f"[epoch:{epoch}]","loss",epoch_loss/len(trainloader),"acc",correct/total)
         # if epoch%2==0 or epoch>=config["epoch"]-2:
             
@@ -141,18 +156,18 @@ def train(net, trainloader, testloader):
 #         print("Test acc",correct/total)
         
 if __name__=="__main__":
-    net = LeNet(2,config)
+    # net = resnet50()
     dataset = ImageDataset(base_dir + config["mode"],device=device,config=config,train=True)
     trainset, valset = random_split(dataset, [int(0.9 * len(dataset)), len(dataset)-int(0.9 * len(dataset))])
-    trainloader = DataLoader(trainset, batch_size=config["batch"], shuffle=True, num_workers=16,drop_last=True)
+    trainloader = DataLoader(trainset, batch_size=config["batch"], shuffle=True, num_workers=8,drop_last=True)
     # val_loader = DataLoader(valset, batch_size=config["batch"], shuffle=True, num_workers=2)
     test_dataset = ImageDataset(base_dir + 'test',device=device,config=config,train=False)
-    testloader = DataLoader(test_dataset, batch_size=config["batch"], shuffle=True, num_workers=16,drop_last=True)
+    testloader = DataLoader(test_dataset, batch_size=config["batch"], shuffle=True, num_workers=8,drop_last=True)
 
     dataset = ImageDataset(base_dir + 'test',device=device,config=config,train=False)
     # testloader = DataLoader(dataset, batch_size=config["batch"], shuffle=True, num_workers=2)
 
-    net=train(net,trainloader,testloader)
+    net=train(resnet50,trainloader,testloader,criterion)
     # torch.save(net.state_dict(),"/home/xiao/code/CS5242/CS5242/model/model.pth")
     # test(net,testloader)
     

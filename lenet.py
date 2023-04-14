@@ -2,7 +2,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch
 
-
+from torch.nn import MultiheadAttention as attention
 
 class LeNet(nn.Module):
    
@@ -13,7 +13,7 @@ class LeNet(nn.Module):
         self.fc1   = nn.Linear(13456, 120)
         self.fc2   = nn.Linear(120, 84)
         self.fc3   = nn.Linear(84, num_classes)
-       
+        # self.attention = nn.MultiheadAttention(embed_dim=13456, num_heads=8, dropout=config["dropout_rate"])
         self.config=config
         if self.config["norm_type"]=="BN":
             self.norm1=nn.BatchNorm2d(6)
@@ -37,7 +37,10 @@ class LeNet(nn.Module):
         elif self.config["activation"] == "tanh":
             self.activation = nn.Tanh()
         
-        self.dropout = nn.Dropout(p=0.5)
+        self.dropout1 = nn.Dropout(p=config["dropout_rate"])
+        self.dropout2 = nn.Dropout(p=config["dropout_rate"])
+        self.dropout3 = nn.Dropout(p=config["dropout_rate"])
+        self.dropout4 = nn.Dropout(p=config["dropout_rate"])
         
     def get_emb(self,x):
         out = self.conv1(x)
@@ -45,47 +48,52 @@ class LeNet(nn.Module):
         if self.config["norm"]==1:
             out=self.norm1(out)
             return tmp,out
-    def forward(self, x):
+    def forward(self, x,config):
         
         
         out = self.conv1(x)
       
-        if self.config["norm"]==1:
+        if config["norm"]==1:
             out=self.norm1(out)
             
         out = self.activation(out)
         out = F.max_pool2d(out, 2)
-        # if self.config["dropout"]:
-        #     out = self.dropout(out) # Applying dropout after max pooling
+        if config["dropout"]:
+            out = self.dropout1(out) # Applying dropout after max pooling
 
         out = self.conv2(out)
-        if self.config["norm"]==2:
+        if config["norm"]==2:
             out=self.norm2(out)
         out = self.activation(out)
         out = F.max_pool2d(out, 2)
-        if self.config["dropout"]:
-            out = self.dropout(out) # Applying dropout after max pooling
+        if config["dropout"]:
+            out = self.dropout2(out) # Applying dropout after max pooling
         
-        # breakpoint()
+        # out = out.view(out.size(0), -1).unsqueeze(0)
+        
+        # attn_output, _ = self.attention(out, out, out)
+        # out = attn_output.squeeze(0).view(x.size(0), -1)
+        # Transpose back and reshape
+        
 
         out = out.view(self.config["batch"], -1)
 
         out=self.fc1(out)
         out = self.activation(out)
-        if self.config["norm"]==3:
+        if config["norm"]==3:
             out=self.norm3(out)
-        if self.config["dropout"]:
-            out = self.dropout(out) # Applying dropout after ReLU
+        if config["dropout"]:
+            out = self.dropout3(out) # Applying dropout after ReLU
 
         out=self.fc2(out)
-        if self.config["norm"]==4:
+        if config["norm"]==4:
             out=self.norm4(out)
         out = self.activation(out)
-        # if self.config["dropout"]:
-        #     out = self.dropout(out) # Applying dropout after ReLU
+        if config["dropout"]:
+            out = self.dropout4(out) # Applying dropout after ReLU
 
         out = self.fc3(out)
-        out = torch.sigmoid(out)
+        # out = torch.sigmoid(out)
         return out
     
 
@@ -94,7 +102,10 @@ class LeNet_cifar(nn.Module):
     def __init__(self, num_classes,config):
         super(LeNet_cifar, self).__init__()
         self.conv1 = nn.Conv2d(3, 6, 5)
+        self.maxpool1 = nn.MaxPool2d(2, 2)
         self.conv2 = nn.Conv2d(6, 16, 5)
+        
+        self.maxpool2 = nn.MaxPool2d(2, 2)
         self.fc1   = nn.Linear(16 * 5 * 5, 120)
         self.fc2   = nn.Linear(120, 84)
         self.fc3   = nn.Linear(84, num_classes)
@@ -139,7 +150,7 @@ class LeNet_cifar(nn.Module):
             out=self.norm1(out)
             
         out = self.activation(out)
-        out = F.max_pool2d(out, 2)
+        out = self.maxpool1(out)
         # if self.config["dropout"]:
         #     out = self.dropout(out) # Applying dropout after max pooling
 
@@ -147,7 +158,8 @@ class LeNet_cifar(nn.Module):
         if self.config["norm"]==2:
             out=self.norm2(out)
         out = self.activation(out)
-        out = F.max_pool2d(out, 2)
+        out = self.maxpool2(out)
+        # out = F.max_pool2d(out, 2)
         if self.config["dropout"]:
             out = self.dropout(out) # Applying dropout after max pooling
         
@@ -170,5 +182,5 @@ class LeNet_cifar(nn.Module):
         #     out = self.dropout(out) # Applying dropout after ReLU
 
         out = self.fc3(out)
-        out = torch.sigmoid(out)
+        out =  F.log_softmax(out, dim=1)
         return out

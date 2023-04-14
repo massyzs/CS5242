@@ -10,8 +10,8 @@ import argparse
 from accelerate import Accelerator
 import os
 from PIL import Image
-
-
+from torch.utils.data import DataLoader, Dataset
+import numpy as np
 accelerator = Accelerator()
 parser = argparse.ArgumentParser(description='NA')
 parser.add_argument('--cuda', type=int, default=0)
@@ -46,29 +46,48 @@ import torchvision
 import torchvision.transforms as transforms
 
 # Define data transformations
-transform = transforms.Compose([
-    transforms.RandomHorizontalFlip(),
-    transforms.RandomCrop(32, padding=4),
-    transforms.ToTensor(),
-    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
-])
+# transform = transforms.Compose([
+#     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+#     transforms.RandomHorizontalFlip(),
+#     transforms.RandomCrop(32, padding=4),
+   
+    
+# ])
+transform =transforms.Compose([
+                transforms.Resize((32, 32)),
+                # transforms.ToTensor(),
+                transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+            ])
 
-# Load the CIFAR-10 training dataset
-trainset = torchvision.datasets.CIFAR10(root='/home/xiao/code/CS5242', train=True,
-                                        download=True, transform=transform)
-trainloader = torch.utils.data.DataLoader(trainset, batch_size=config["batch"],
-                                          shuffle=True, num_workers=8)
+from datasets import load_dataset
 
-# Load the CIFAR-10 testing dataset
-testset = torchvision.datasets.CIFAR10(root='/home/xiao/code/CS5242', train=False,
-                                       download=True, transform=transform)
-testloader = torch.utils.data.DataLoader(testset, batch_size=config["batch"],
-                                         shuffle=False, num_workers=8)
+cifar10_dataset = load_dataset("cifar10")
 
+trainset = cifar10_dataset["train"]
+testset = cifar10_dataset["test"]
+
+# breakpoint()
 # Classes in the CIFAR-10 dataset
 classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 
+class CIFAR10Dataset(Dataset):
+    def __init__(self, dataset, transform=None):
+        self.dataset = dataset
+        self.images = torch.tensor(np.array([np.array(img).reshape(3, 32, 32) for img in self.dataset["img"]]),dtype=torch.float32)
+        self.labels = torch.tensor(np.array(self.dataset["label"]),dtype=torch.long)
+        # breakpoint()
+        
+        self.transform = transform
 
+    def __len__(self):
+        return len(self.images)
+
+    def __getitem__(self, idx):
+            
+        self.image=self.transform(self.images[idx])
+       
+            
+        return self.image, self.labels[idx]
 device=config["cuda"]
 device=torch.device(f"cuda:{device}")
 
@@ -153,6 +172,11 @@ if __name__=="__main__":
 
     # dataset = ImageDataset(base_dir + 'test',device=device,config=config,train=False)
     # testloader = DataLoader(dataset, batch_size=config["batch"], shuffle=True, num_workers=2)
+    train_set=CIFAR10Dataset(trainset,transform=transform)
+    
+    test_set=CIFAR10Dataset(testset,transform=transform)
+    trainloader=DataLoader(train_set,batch_size=config["batch"],num_workers=8,shuffle=True,drop_last=True)
+    testloader=DataLoader(test_set,batch_size=config["batch"],num_workers=8,shuffle=False,drop_last=True)
 
     net=train(net,trainloader,testloader)
     # torch.save(net.state_dict(),"/home/xiao/code/CS5242/CS5242/model/model.pth")
