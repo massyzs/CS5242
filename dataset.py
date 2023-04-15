@@ -8,19 +8,15 @@ import torchvision.transforms as transforms
 class ImageDataset(Dataset):
     def __init__(self, image_dir,device,config,train=False):
         self.image_dir = image_dir
-        self.imgs=glob(self.image_dir+'/*/*')
-        # /home/xiao/code/CS5242/dataset/train
-        # /home/xiao/code/CS5242/dataset/train/norm_aug
-        # breakpoint()
-        # breakpoint()
-      #/home/xiaocao/code/Yao/dataset/weapon det/train/weap/lalala.png
+        self.imgs=glob(self.image_dir+'*/*.png')
+       
         self.labels=[]
         for img in self.imgs:
-            if img.split('/')[-2]=="weap_aug":
+            if img.split('/')[-2]=="weap":
                 self.labels.append(1)
-            else:
+            elif img.split('/')[-2]=="norm":
                 self.labels.append(0)
-        
+            breakpoint()
         
         
         self.transform = transforms.Compose([
@@ -32,16 +28,7 @@ class ImageDataset(Dataset):
             # transforms.Normalize(mean=[0.44625, 0.4312, 0.40765], std=[0.274425, 0.273325, 0.2723])
         ])
       
-    
-          
-        # self.images = []
-
         self.device=device
-        # for idx in range(len(self.imgs)):
-        #     self.images.append(self.transform(Image.open(self.imgs[idx]).convert('RGB')))
-        # for idx in range(len(self.imgs)):
-        #     self.images.append(self.transform2(Image.open(self.imgs[idx]).convert('RGB')))
-        # self.labels= self.labels+ self.labels
 
     def __len__(self):
         return len(self.imgs)
