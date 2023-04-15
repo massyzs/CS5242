@@ -24,8 +24,9 @@ parser.add_argument('--norm_type', type=str, default="BN",help="BN for batchnorm
 parser.add_argument('--opt', type=str, default="adam", help="optimizer type: adam or sgd")
 parser.add_argument('--activation', type=str, default="relu", help="leakyrelu, relu, sigmoid, tanh")
 parser.add_argument('--aug', type=int, default=1, help="bool: whether or not to use data augmentation")
-parser.add_argument('--save', type=int, default=0, help="bool: whether or not to use data augmentation")
-parser.add_argument('--rate', type=float, default=0.7, help="bool: whether or not to use data augmentation")
+# parser.add_argument('--save', type=int, default=0, help="bool: whether or not to use data augmentation")
+parser.add_argument('--rate', type=float, default=0.1, help="bool: whether or not to use data augmentation")
+parser.add_argument('--ratio', type=float, default=0.5, help="bool: whether or not to use data augmentation")
 args = parser.parse_args()
 config={
     "mode": "train",
@@ -40,11 +41,11 @@ config={
     "opt": args.opt,
     "activation": args.activation,
     "data_augmentation":bool(args.aug),
-    "save":bool(args.save),
+    # "save":bool(args.save),
     "dropout_rate":args.rate
 }
 
-base_dir="/home/xiao/code/CS5242/dataset/"
+# base_dir="/home/xiao/code/CS5242/dataset/"
 device=config["cuda"]
 device=torch.device(f"cuda:{device}")
 
@@ -121,38 +122,12 @@ def train(net, trainloader, testloader):
     return net
            
 
-# def test(net, testloader):
-#     net.eval()
-#     with torch.no_grad():  
-#         net.to(device)
-#         correct=0
-#         total=0
-#         for i,data in enumerate(testloader):
-#             img,gt=data
-#             img=img.to(device)
-#             gt=gt.to(device)
-#             y=net(img)
-           
-#             cls=torch.argmax(y,dim=1)
-#             correct+=(gt==cls).sum().item()
-#             total+=gt.size(0)
 
-            
-#         print("Test acc",correct/total)
         
 if __name__=="__main__":
     net = LeNet(2,config)
-    dataset = ImageDataset(base_dir + config["mode"],device=device,config=config,train=True)
-    trainset, valset = random_split(dataset, [int(0.9 * len(dataset)), len(dataset)-int(0.9 * len(dataset))])
+    trainset = ImageDataset(f'/home/xiao/code/CS5242/dataset_copy/{args.ratio}_in_one/train/',device=device,config=config,train=True)
     trainloader = DataLoader(trainset, batch_size=config["batch"], shuffle=True, num_workers=16,drop_last=True)
-    # val_loader = DataLoader(valset, batch_size=config["batch"], shuffle=True, num_workers=2)
-    test_dataset = ImageDataset(base_dir + 'test',device=device,config=config,train=False)
-    testloader = DataLoader(test_dataset, batch_size=config["batch"], shuffle=True, num_workers=16,drop_last=True)
-
-    dataset = ImageDataset(base_dir + 'test',device=device,config=config,train=False)
-    # testloader = DataLoader(dataset, batch_size=config["batch"], shuffle=True, num_workers=2)
-
+    testset = ImageDataset(f'/home/xiao/code/CS5242/dataset_copy/{args.ratio}_in_one/test/',device=device,config=config,train=True)
+    testloader = DataLoader(testset, batch_size=config["batch"], shuffle=True, num_workers=16,drop_last=True)
     net=train(net,trainloader,testloader)
-    # torch.save(net.state_dict(),"/home/xiao/code/CS5242/CS5242/model/model.pth")
-    # test(net,testloader)
-    
