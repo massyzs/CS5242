@@ -8,15 +8,19 @@ import torchvision.transforms as transforms
 class ImageDataset(Dataset):
     def __init__(self, image_dir,device,config,train=False):
         self.image_dir = image_dir
-        self.imgs=glob(self.image_dir+'*/*.png')
-       
+        self.imgs=glob(self.image_dir+'*/*')
+        # '/home/xiao/code/CS5242/dataset_aug/train/'
+        # '/home/xiao/code/CS5242/dataset_aug/train'
+        # /home/xiao/code/CS5242/dataset_copy/all_in_one
+        # breakpoint()
         self.labels=[]
+        # breakpoint()
         for img in self.imgs:
             if img.split('/')[-2]=="weap":
                 self.labels.append(1)
             elif img.split('/')[-2]=="norm":
                 self.labels.append(0)
-            breakpoint()
+        
         
         
         self.transform = transforms.Compose([
@@ -37,7 +41,4 @@ class ImageDataset(Dataset):
         image=self.transform(Image.open(self.imgs[idx]).convert('RGB'))
         
         return image, torch.tensor(self.labels[idx])
-
-
-
 

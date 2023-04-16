@@ -10,23 +10,23 @@ import argparse
 # from accelerate import Accelerator
 import os
 from PIL import Image
-
+from torch.utils.tensorboard import SummaryWriter
 
 # accelerator = Accelerator()
 parser = argparse.ArgumentParser(description='NA')
-parser.add_argument('--cuda', type=int, default=0)
+parser.add_argument('--cuda', type=int, default=2)
 parser.add_argument('--batch', type=int, default=128)
-parser.add_argument('--norm', type=int, default=1, help="which layer to add normalization: 1-8")
-parser.add_argument('--epoch', type=int, default=60)
-parser.add_argument('--dropout', type=int, default=1, help="bool: whether or not to use drop out")
+parser.add_argument('--norm', type=int, default=0, help="use 1 to add to all layers")
+parser.add_argument('--epoch', type=int, default=40)
+parser.add_argument('--dropout', type=int, default=0, help="bool: whether or not to use drop out")
 parser.add_argument('--weight_decay', type=int, default=0, help="bool: whether or not to use weight decay (L2 regularization)")
 parser.add_argument('--norm_type', type=str, default="BN",help="BN for batchnorm, LN for LayerNorm")
 parser.add_argument('--opt', type=str, default="adam", help="optimizer type: adam or sgd")
 parser.add_argument('--activation', type=str, default="relu", help="leakyrelu, relu, sigmoid, tanh")
-parser.add_argument('--aug', type=int, default=1, help="bool: whether or not to use data augmentation")
+parser.add_argument('--aug', type=int, default=0, help="bool: whether or not to use data augmentation")
 # parser.add_argument('--save', type=int, default=0, help="bool: whether or not to use data augmentation")
-parser.add_argument('--rate', type=float, default=0.1, help="bool: whether or not to use data augmentation")
-parser.add_argument('--ratio', type=float, default=0.5, help="bool: whether or not to use data augmentation")
+parser.add_argument('--rate', type=float, default=0.8, help="bool: whether or not to use data augmentation")
+parser.add_argument('--ratio', type=float, default=0.8, help="bool: whether or not to use data augmentation")
 args = parser.parse_args()
 config={
     "mode": "train",
@@ -44,7 +44,7 @@ config={
     # "save":bool(args.save),
     "dropout_rate":args.rate
 }
-
+writer = SummaryWriter(f'/home/xiao/code/CS5242/CS5242/tfboard/{args.norm_type}{args.norm}_{args.rate}_mix{args.ratio}')
 # base_dir="/home/xiao/code/CS5242/dataset/"
 device=config["cuda"]
 device=torch.device(f"cuda:{device}")
@@ -67,23 +67,19 @@ def valid(net,val_dataloader,epoch):
             total+=gt.size(0)
             epoch_loss+=loss.item()
         print(f"[epoch:{epoch}]","test loss",epoch_loss/len(val_dataloader),"test acc",correct/total)
-        return epoch_loss/len(val_dataloader),correct/len(val_dataloader)
+        
+        return correct/total
     
 def train(net, trainloader, testloader):
     net.train()
     net.to(device)
     criertion=nn.CrossEntropyLoss()
-    
-    if config["opt"] == "sgd":
-        if config["weight_decay"]:
-            opt=optim.SGD(net.parameters(), lr=config["lr"], weight_decay=0.0005)
-        else:
-            opt=optim.SGD(net.parameters(), lr=config["lr"])
+    highest_acc=-100
+   
+    if config["weight_decay"]:
+        opt=optim.Adam(net.parameters(),lr=config["lr"],betas=(0.9, 0.999), weight_decay=0.0005)
     else:
-        if config["weight_decay"]:
-            opt=optim.Adam(net.parameters(),lr=config["lr"],betas=(0.9, 0.999), weight_decay=0.0005)
-        else:
-            opt=optim.Adam(net.parameters(),lr=config["lr"],betas=(0.9, 0.999))
+        opt=optim.Adam(net.parameters(),lr=config["lr"],betas=(0.9, 0.999))
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(opt, 'min',patience=5,verbose=True,factor=0.8)
     
     for epoch in range(config["epoch"]):
@@ -109,17 +105,23 @@ def train(net, trainloader, testloader):
             opt.step()
             epoch_loss+=loss.item()
         scheduler.step(epoch_loss/len(trainloader))
-        if epoch%2==0:
-            config["dropout"]=True
-        else:
-            config["dropout"]=False
+       
+        # if epoch%2==0:
+        #     config["dropout"]=True
+        # else:
+        #     config["dropout"]=False
         print(f"[epoch:{epoch}]","loss",epoch_loss/len(trainloader),"acc",correct/total)
         # if epoch%2==0 or epoch>=config["epoch"]-2:
             
-        val_loss,val_acc=valid(net,testloader,epoch)
+        test_acc=valid(net,testloader,epoch)
+        if test_acc>highest_acc:
+            highest_acc=test_acc
+
+        writer.add_scalars('ACC', {"Train":correct/total,"Test":test_acc}, epoch)
+       
         # breakpoint()
             # val_loss,val_acc=valid(net,valloader,epoch)
-    return net
+    return highest_acc
            
 
 
@@ -130,4 +132,5 @@ if __name__=="__main__":
     trainloader = DataLoader(trainset, batch_size=config["batch"], shuffle=True, num_workers=16,drop_last=True)
     testset = ImageDataset(f'/home/xiao/code/CS5242/dataset_copy/{args.ratio}_in_one/test/',device=device,config=config,train=True)
     testloader = DataLoader(testset, batch_size=config["batch"], shuffle=True, num_workers=16,drop_last=True)
-    net=train(net,trainloader,testloader)
+    highest_acc=train(net,trainloader,testloader)
+    print("Highest Test ACC :",highest_acc)
